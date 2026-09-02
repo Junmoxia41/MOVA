@@ -32,7 +32,22 @@ consecuencias. Las decisiones de producto y negocio **no** están aquí: son del
   mantenimiento) y §105 exige no asumir versiones antiguas. El riesgo de adoptar una major nueva
   sin poder compilar en local desapareció al estar operativo GitHub Actions: cualquier error de
   API se detecta en el push.
-- **Estado**: decisión tomada; **pendiente de implementar y verificar** en Fase 2.
+- **Estado**: **implementada y verificada**. Run `33655788145`: compila, pasa lint y genera un
+  APK de 13 936 422 bytes (el incremento frente a 11,25 MB es el SQLite bundled empaquetado).
+
+## D-010 — KSP 2.3.11 con el built-in Kotlin de AGP 9
+
+- **Contexto**: AGP 9.4 incorpora Kotlin integrado; por eso la plantilla de Android Studio no
+  aplica `org.jetbrains.kotlin.android`. KSP `2.2.10-2.0.2` registra sus fuentes generadas vía
+  `kotlin.sourceSets`, que el built-in Kotlin rechaza.
+- **Error real** (CI run `33655481183`): `EvalIssueException: Using kotlin.sourceSets DSL to add
+  Kotlin sources is not allowed with built-in Kotlin`.
+- **Decisión**: **KSP 2.3.11**. La línea 2.3.x está desacoplada de la versión de Kotlin y corrige
+  la detección de built-in Kotlin (google/ksp #2729, #2772).
+- **Descartado**: `android.disallowKotlinSourceSets=false` en `gradle.properties`. Es un
+  supresor del error, no una corrección, y está marcado para deprecación.
+- **Lección**: este fallo sólo existe en la combinación AGP 9 + KSP antiguo. Ningún documento
+  del proyecto lo anticipaba; lo detectó el compilador.
 
 ## D-003 — Inyección de dependencias manual, sin Hilt
 

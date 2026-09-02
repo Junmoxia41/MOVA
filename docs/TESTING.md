@@ -35,17 +35,24 @@ ANDROID STUDIO → SYNC → BUILD → TEST → INSTALL → RUN
 ## Estado actual
 
 Ejecutado en GitHub Actions run
-[`33651715254`](https://github.com/Junmoxia41/MOVA/actions/runs/33651715254) (commit `c248d1a`):
+[`33656287736`](https://github.com/Junmoxia41/MOVA/actions/runs/33656287736) (commit `193bb37`):
 
 | Tarea | Resultado |
 | --- | --- |
-| `testDebugUnitTest` | ✅ success |
+| `testDebugUnitTest` | ✅ **8 tests ejecutados, 0 fallidos, 0 errores, 0 omitidos** |
 | `lintDebug` | ✅ success |
-| `assembleDebug` | ✅ success — artefacto `mova-debug-apk`, 11 253 992 bytes |
+| `assembleDebug` | ✅ success — `mova-debug-apk`, 13 936 422 bytes |
 
-Cobertura real hoy: solo los tests de ejemplo de la plantilla (`ExampleUnitTest`,
-`ExampleInstrumentedTest`). **La cadena está verificada; la cobertura es nula.** Las pruebas
-de dominio, Room y sincronización llegan con las fases 2, 6 y 8.
+El recuento no se infiere del paso en verde: un paso dedicado parsea los XML de
+`app/build/test-results/testDebugUnitTest/` y lo publica como anotación. **Si no hay XML,
+falla**: un paso que pasa sin ejecutar tests no es evidencia.
+
+Suites actuales: `DriverMapperTest` (mapeo ida y vuelta, degradación de enums desconocidos,
+regla de visibilidad pública) y `EnumParsingTest` (nulos, vacíos y valores inválidos).
+Se eliminó `ExampleUnitTest` de la plantilla: `assertEquals(4, 2 + 2)` no prueba nada.
+
+Pendiente: pruebas de Room (§85) y de sincronización (§86, §87), que requieren test
+instrumentado o Robolectric.
 
 > El entorno del agente no puede compilar en local (sin JDK, Android SDK ni red para
 > descargarlos), así que **toda afirmación de compilación procede de un run de Actions**,

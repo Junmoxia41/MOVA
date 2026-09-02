@@ -4,9 +4,9 @@ name: Android CI
 # NO publica nada: solo compila y prueba. Publicar requiere autorización explícita
 # del propietario (Límites §9).
 #
-# Los logs de ejecución se almacenan en un blob externo al que el entorno de
-# desarrollo no tiene acceso, así que en caso de fallo el workflow publica las
-# últimas líneas como comentario del commit. Es el canal de diagnóstico.
+# Los logs de ejecución viven en un blob externo al que el entorno de desarrollo no
+# tiene acceso, así que los resultados se publican como ANOTACIONES (legibles por API)
+# y los fallos como comentario del commit. Ese es el canal de diagnóstico.
 
 on:
   push:
@@ -40,19 +40,11 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Inspect Android SDK
-        run: |
-          set -x
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          sdkmanager --version || true
-          sdkmanager --list_installed || true
-
       - name: Install Android platform 37
         run: |
           set -x
           yes | sdkmanager --licenses > /dev/null 2>&1 || true
           sdkmanager --install "platforms;android-37" || true
-          sdkmanager --list_installed
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -78,12 +70,12 @@ jobs:
               skipped += int(r.get("skipped", 0))
               suites.append(os.path.basename(f).replace("TEST-", "").replace(".xml", ""))
           if not files:
-              print("::error::No se generó ningún XML de resultados: los tests no se ejecutaron")
+              print("::error::No se generó ningún XML: los tests no se ejecutaron")
               raise SystemExit(1)
           print(f"::notice::Unit tests: {total} ejecutados, {failures} fallidos, "
                 f"{errors} errores, {skipped} omitidos")
-          for s in sorted(suites):
-              print(f"::notice::  suite {s}")
+          for name in sorted(suites):
+              print(f"::notice::  suite {name}")
           if failures or errors:
               raise SystemExit(1)
           PY
@@ -122,3 +114,55 @@ jobs:
           } > "$RUNNER_TEMP/body.md"
           gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" \
             -f body="$(cat "$RUNNER_TEMP/body.md")" > /dev/null
+
+  supabase:
+    name: Supabase connectivity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check credentials
+        id: creds
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Omitido: faltan los secrets SUPABASE_URL y SUPABASE_ANON_KEY"
+            echo "::notice::Añádelos en Settings → Secrets and variables → Actions"
+            exit 0
+          fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Verify REST endpoint
+        if: steps.creds.outputs.available == 'true'
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$URL/rest/v1/" -H "apikey: $KEY")
+          echo "::notice::GET /rest/v1/ → HTTP $code"
+          if [ "$code" != "200" ]; then
+            echo "::error::Supabase no respondió 200 (HTTP $code): URL o clave incorrectas"
+            exit 1
+          fi
+
+      - name: Report schema state
+        if: steps.creds.outputs.available == 'true'
+        env:
+          URL: ${{ secrets.SUPABASE_URL }}
+          KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          ok=0; missing=0
+          for t in profiles service_areas driver_plans drivers vehicles driver_availability \
+                   bookings reviews favorites subscriptions notifications app_config \
+                   audit_logs sync_metadata; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 \
+              "$URL/rest/v1/$t?select=*&limit=1" -H "apikey: $KEY" -H "Authorization: Bearer $KEY")
+            if [ "$code" = "200" ]; then
+              ok=$((ok + 1)); echo "::notice::  ✓ $t"
+            else
+              missing=$((missing + 1)); echo "::notice::  ✗ $t (HTTP $code)"
+            fi
+          done
+          echo "::notice::Esquema aplicado: $ok de 14 tablas responden; $missing no"
