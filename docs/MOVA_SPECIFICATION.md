@@ -700,8 +700,8 @@ Se revisaron los dos documentos en busca de contradicciones reales. Resultado:
 
 - **Rama activa:** `main`.
 - **Remoto:** `origin` → `https://github.com/Junmoxia41/MOVA.git`.
-- **Últimos commits:** tres commits "Add files via upload" — sin mensajes semánticos.
-- **Stack Gradle:** Gradle 9.6.0, AGP 9.4.0, Kotlin 2.2.10, JDK 11, Compose BOM 2026.02.01.
+- **Últimos commits:** tres commits "Add files via upload" (sin mensajes semánticos) + un commit posterior `docs: consolidate MOVA project specifications`. La rama `main` está **por delante de `origin`** o al día; verificar `git push` antes de continuar.
+- **Stack Gradle:** Gradle 9.6.0, AGP 9.4.0, Kotlin 2.2.10, Compose BOM 2026.02.01. Compatibilidad Java: `source/target = Java 11`; el **toolchain del daemon de Gradle es JDK 25** (`gradle/gradle-daemon-jvm.properties`).
 - **Configuración Android:** `compileSdk 37`, `targetSdk 37`, `minSdk 24`, `versionCode 1`, `versionName "1.0"`.
 - **Build types:** `release` con `optimization { enable = false }` (placeholder).
 - **Paquete actual:** `com.example.mova` (candidato a renombrar a `com.mova.santaclara`).
@@ -709,10 +709,10 @@ Se revisaron los dos documentos en busca de contradicciones reales. Resultado:
 - **Estructura de carpetas:** solo `app/src/main/java/com/example/mova/...` con `ui/theme/` (Color, Theme, Type) — no existe aún la estructura `core/data/domain/feature` propuesta por el Mega Prompt.
 - **Recursos:** iconos por defecto de Android Studio (no branding MOVA), tema `Theme.MOVA` definido.
 - **Tests:** un test unitario y un instrumentado generados por plantilla, sin contenido real.
-- **Documentación:** no existe `README.md`, ni `docs/`, ni `CHANGELOG.md`, ni `PROJECT_STATUS.md`. Este documento es la **primera** pieza de documentación.
-- **Archivos sensibles detectados:**
-  - `local.properties` contiene `sdk.dir` apuntando a `C:\Users\airienrr\AppData\Local\Android\Sdk` — **no debe commitearse**.
-  - No existe `.gitignore` explícito en la raíz (revisar; debe añadirse si falta).
+- **Documentación:** no existe `README.md`, ni `CHANGELOG.md`, ni `PROJECT_STATUS.md`, ni el resto de `docs/` propuesto. **Sí existe** `docs/MOVA_SPECIFICATION.md` (este documento) como primera pieza de documentación.
+- **Archivos sensibles / higiene detectados:**
+  - `local.properties` está **actualmente rastreado (trackeado) por Git** y contiene `sdk.dir` apuntando a `C:\Users\airienrr\AppData\Local\Android\Sdk`. No contiene secretos, pero es configuración de máquina que **no debe commitearse**. Acción para la fase de implementación: `git rm --cached local.properties` y añadirlo al `.gitignore`. **(Requeriría modificar el repo → no ejecutado en esta etapa.)**
+  - No existe `.gitignore` en la raíz. Debe crearse en la siguiente fase (incluir `local.properties`, `*.keystore`, `*.jks`, `secrets/`, `.env*`, `.kotlin/`, `build/`).
 - **Supabase / WorkManager / Room / DataStore / navegación:** no presentes.
 - **Workflows de GitHub Actions:** no existen.
 
