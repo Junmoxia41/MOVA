@@ -12,6 +12,8 @@ Formato basado en Keep a Changelog. Versionado: `MAJOR.MINOR.PATCH` (Mega Prompt
   GITHUB, TESTING, PRODUCT, ADMIN, DRIVER, DECISIONS, ROADMAP).
 - Migraciones iniciales de Supabase con Row Level Security en `supabase/migrations/`.
 - Seeds de desarrollo en `supabase/seed/`.
+- Pipeline de CI `.github/workflows/android-ci.yml`: tests, lint y APK debug en cada push, con
+  reporte de fallos como comentario del commit.
 
 ### Changed
 
@@ -31,5 +33,7 @@ Formato basado en Keep a Changelog. Versionado: `MAJOR.MINOR.PATCH` (Mega Prompt
 
 ### Fixed
 
+- `gradlew` ahora es ejecutable (modo `100755`): se había commiteado con `100644` desde Windows
+  y fallaba con `Permission denied` en Linux, macOS y CI.
 - `local.properties` dejó de estar versionado: contenía la ruta local del SDK y el propio
   fichero indica que no debe subirse a control de versiones.

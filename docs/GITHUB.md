@@ -38,5 +38,12 @@ Workflows de build, test y lint sobre pull request, con artefactos debug APK.
 Secretos siempre por **GitHub Secrets**. **Nunca se publica automáticamente una versión de
 producción.**
 
-Estado: `.github/workflows/android-ci.yml` está escrito pero **sin publicar**, porque la
-GitHub App no tiene permiso `workflows`. Ver `PROJECT_STATUS.md` → BLOQUEO 2.
+Estado: `.github/workflows/android-ci.yml` **publicado y en verde**. Ejecuta
+`testDebugUnitTest`, `lintDebug` y `assembleDebug` en cada push, sube el APK debug como
+artefacto y, cuando algo falla, **publica las últimas 120 líneas del log como comentario del
+commit** — único canal de diagnóstico legible desde el entorno del agente, porque los logs y
+artefactos de Actions viven en un blob externo inaccesible.
+
+> Publicar el workflow requirió que el propietario concediera permiso `workflows` a la
+> GitHub App: el primer push fue rechazado con
+> `refusing to allow a GitHub App to create or update workflow ... without 'workflows' permission`.

@@ -2,8 +2,15 @@
 
 ## Estado
 
-**Fase 1 — BOOTSTRAP en curso.** Repositorio saneado, paquete renombrado y línea base de
-documentación creada. Todavía no hay capa de datos ni UI propia.
+**Fase 1 — BOOTSTRAP verificada en CI.** Repositorio saneado, paquete renombrado, documentación
+completa, esquema Supabase escrito y **pipeline de compilación en verde**.
+Todavía no hay capa de datos (Room) ni UI propia.
+
+**Última verificación real**: GitHub Actions run
+[`33651715254`](https://github.com/Junmoxia41/MOVA/actions/runs/33651715254) sobre `c248d1a` —
+`testDebugUnitTest` ✅ · `lintDebug` ✅ · `assembleDebug` ✅ · artefacto `mova-debug-apk`
+(11 253 992 bytes). Esto confirma además que AGP 9.4.0 + Gradle 9.6.0 + Kotlin 2.2.10 +
+`compileSdk`/`targetSdk` 37 + toolchain JDK 25 son compatibles entre sí.
 
 Versión del proyecto: `1.0.0` (`versionCode` 1) — nada publicado aún.
 
@@ -19,44 +26,42 @@ Versión del proyecto: `1.0.0` (`versionCode` 1) — nada publicado aún.
 - **Permisos**: `INTERNET` y `ACCESS_NETWORK_STATE` en el manifiesto (§3, §52).
 - **Documentación**: `README.md`, `PROJECT_STATUS.md`, `CHANGELOG.md` y 15 documentos en
   `docs/` (§101–§104).
-- **Esquema Supabase**: migraciones iniciales en `supabase/migrations/` (§23) con RLS (§24).
+- **Esquema Supabase**: 7 migraciones en `supabase/migrations/` con las **14 tablas** del §23,
+  RLS en todas (§24), guards por trigger para `verification_status`, transiciones de reserva y
+  una reseña por reserva completada. Seed de desarrollo en `supabase/seed/`.
+  Comprobado estáticamente: 14/14 tablas, 14/14 con RLS, todas las funciones referenciadas
+  existen y están definidas antes de usarse.
+- **CI operativa** (Fase 13 adelantada): `.github/workflows/android-ci.yml` compila, testea y
+  pasa lint en cada push, y publica el log como comentario del commit cuando falla.
 
 ## En desarrollo
 
-- **Capa `core` y `domain`** (logging, conectividad, errores, modelos, casos de uso).
+- **Fase 2 — DATA**: Room, entidades, DAOs y repositories (siguiente incremento, con
+  verificación en CI).
 
 ## Pendiente
 
 - **Fase 1 (resto)**: navegación Compose y arquitectura por capas en el código.
 - **Fase 2 — DATA**: Room, entidades, DAOs, repositories, aplicación de migraciones.
 - **Fases 3–14**: auth, conductores, pasajero, reservas, agenda, offline/sync, reseñas,
-  planes, admin, QA, CI, release.
-- Workflow de GitHub Actions escrito en `.github/workflows/android-ci.yml` pero **sin publicar**
-  (ver Problemas conocidos).
+  planes, admin, QA, release.
 
 ## Problemas conocidos
 
-### BLOQUEO 1 — Sin verificación de compilación
+### RESUELTO — Verificación de compilación
 
-- **Qué falta**: no se ha ejecutado ningún build ni test.
-- **Por qué falta**: el entorno del agente no tiene JDK (`java: command not found`), ni Android
-  SDK (`ANDROID_HOME` vacío), ni Gradle, y su red saliente está restringida a una lista blanca
-  (`api.github.com` responde `200`; `dl.google.com` falla con error SSL; `repo1.maven.org` y
-  `services.gradle.org` no responden). No se pueden descargar Gradle, el JDK ni dependencias.
-- **Qué sí se pudo hacer**: todo el código, la configuración y la documentación.
-- **Qué se necesita del propietario**: nada todavía; la vía prevista es GitHub Actions.
+El entorno del agente sigue sin JDK, Android SDK ni red para descargarlos
+(`dl.google.com`, `repo1.maven.org` y `services.gradle.org` no responden desde aquí), pero el
+problema está resuelto por otra vía: **GitHub Actions compila y prueba cada push**.
+Los logs de Actions viven en un blob externo igualmente inaccesible, así que el workflow
+publica las últimas 120 líneas como **comentario del commit** cuando falla; ese es el canal de
+diagnóstico que se usa para iterar.
 
-### BLOQUEO 2 — Permiso `workflows` en la GitHub App
+### RESUELTO — Permiso `workflows` en la GitHub App
 
-- **Qué falta**: publicar `.github/workflows/android-ci.yml`.
-- **Por qué falta**: el push fue rechazado con
-  `refusing to allow a GitHub App to create or update workflow ... without 'workflows' permission`
-  y la API devolvió `403 Resource not accessible by integration`.
-- **Qué sí se pudo hacer**: el workflow está escrito y listo en el árbol de trabajo local.
-- **Qué se necesita del propietario**: conceder permiso **`workflows` (write)** a la GitHub App
-  de Arena sobre `Junmoxia41/MOVA`, o crear el fichero manualmente.
+Concedido por el propietario. El workflow ya está publicado y en verde.
 
-### BLOQUEO 3 — Credenciales de Supabase
+### ABIERTO — Credenciales de Supabase
 
 - **Credencial requerida**: `SUPABASE_URL` y `SUPABASE_ANON_KEY` (PUBLIC CONFIG) de un proyecto
   de desarrollo.
@@ -67,8 +72,11 @@ Versión del proyecto: `1.0.0` (`versionCode` 1) — nada publicado aún.
   activar facturación, lo que exige autorización explícita (Límites §2 y §15). El agente no lo
   crea por su cuenta.
 - **Qué sí se pudo hacer**: migraciones, RLS, seeds y todo el código que no depende de ellas.
+- **Estado**: el propietario ha confirmado que creará el proyecto y facilitará
+  `SUPABASE_URL` y `SUPABASE_ANON_KEY`. **Aún no se han recibido.**
 
 ## Próxima fase
 
-**Fase 2 — DATA** en cuanto exista verificación de compilación: Room 2.8.x o 3.0.x (decisión
-`D-002` en `docs/DECISIONS.md`), entidades, DAOs, `MovaDatabase` y repositories.
+**Fase 2 — DATA** con verificación en CI: Room, entidades, DAOs, `MovaDatabase`,
+repositories y el cliente Supabase tras una interfaz (para que la app funcione antes de
+recibir las credenciales).

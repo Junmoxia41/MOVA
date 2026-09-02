@@ -16,17 +16,19 @@ consecuencias. Las decisiones de producto y negocio **no** están aquí: son del
 - **Reversible**: sí, mientras no exista publicación. Se documenta como decisión D3 de la
   especificación por si el propietario prefiere otro identificador.
 
-## D-002 — Versión de Room: `PENDIENTE DE DECISIÓN`
+## D-002 — Versión de Room: **Room 3.0.x** (`androidx.room3`)
 
 - **Contexto**: la documentación oficial vigente (consultada el 2026-09-02) muestra dos líneas:
   **Room 3.0.2** (`androidx.room3:room3-runtime`, KSP obligatorio, APIs basadas en corrutinas,
   requiere un `SQLiteDriver` como `androidx.sqlite:sqlite-bundled`) y **Room 2.8.x**
   (`androidx.room`, en modo mantenimiento con parches).
-- **Decisión**: **aplazada** hasta que exista verificación de compilación.
-- **Motivo**: el entorno del agente no puede compilar (BLOQUEO 1). Elegir una major nueva cuya
-  API no se puede verificar aquí aumentaría el riesgo de entregar código que no compila,
-  contrario a §111. Room 2.8.x sigue recibiendo parches y su API Android es estable.
-- **Acción**: decidir y registrar en cuanto GitHub Actions esté operativo.
+- **Decisión**: **Room 3.0.2** (`androidx.room3:room3-runtime` + KSP `room3-compiler` +
+  `androidx.sqlite:sqlite-bundled` 2.7.0).
+- **Motivo**: es la línea estable vigente según la documentación oficial (Room 2.x está en modo
+  mantenimiento) y §105 exige no asumir versiones antiguas. El riesgo de adoptar una major nueva
+  sin poder compilar en local desapareció al estar operativo GitHub Actions: cualquier error de
+  API se detecta en el push.
+- **Estado**: decisión tomada; **pendiente de implementar y verificar** en Fase 2.
 
 ## D-003 — Inyección de dependencias manual, sin Hilt
 
@@ -69,7 +71,12 @@ consecuencias. Las decisiones de producto y negocio **no** están aquí: son del
   descargarlos.
 - **Decisión**: la verificación real (build, tests, lint) se ejecuta en GitHub Actions.
 - **Motivo**: §111 prohíbe afirmar que algo compila sin compilarlo.
-- **Estado**: workflow escrito; **bloqueado** por falta de permiso `workflows` (BLOQUEO 2).
+- **Estado**: **operativa y en verde**. Run `33651253526` falló por
+  `./gradlew: Permission denied` (el wrapper se commiteó con modo `100644` desde Windows);
+  corregido a `100755`. Run `33651715254` pasó completo: tests, lint y APK debug.
+- **Aprendizaje**: como ni los logs de Actions ni el blob de artefactos son accesibles desde el
+  entorno del agente, el workflow publica el fallo como comentario del commit. Sin ese canal no
+  habría forma de iterar.
 
 ## D-009 — Migraciones SQL escritas, no aplicadas
 

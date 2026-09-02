@@ -6,7 +6,7 @@ fase que corresponda al estado real del proyecto.
 | Fase | Contenido | Estado |
 | --- | --- | --- |
 | **0 — AUDITORÍA** | Repo, entorno, Git, Supabase, archivos existentes | ✅ Completa (`docs/MOVA_SPECIFICATION.md`) |
-| **1 — BOOTSTRAP** | Proyecto Android, Kotlin, Compose, navegación, arquitectura base, Git, README | 🟡 En curso: proyecto, README y docs listos; faltan navegación y capas en código |
+| **1 — BOOTSTRAP** | Proyecto Android, Kotlin, Compose, navegación, arquitectura base, Git, README | 🟡 Proyecto, README, docs y CI listos y **verificados**; faltan navegación y capas en código |
 | **2 — DATA** | Room, entidades, DAOs, repositories, Supabase, migraciones, RLS | 🟡 Migraciones y RLS escritas; falta Room y aplicar el esquema |
 | **3 — AUTH** | Login, registro, sesión, perfiles, roles | ⬜ Pendiente (requiere credenciales) |
 | **4 — CONDUCTORES** | Perfil, vehículo, disponibilidad, verificación | ⬜ Pendiente |
@@ -18,7 +18,7 @@ fase que corresponda al estado real del proyecto.
 | **10 — PLANES** | FREE / PRO / PREMIUM + configuración remota | ⬜ Pendiente (precios: decisión del propietario) |
 | **11 — ADMIN** | Dashboard, conductores, usuarios, reservas, planes, reseñas, configuración | ⬜ Pendiente (soporte: decisión pendiente) |
 | **12 — QA** | Pruebas completas | ⬜ Pendiente |
-| **13 — GITHUB** | Actions, builds, tests, releases | 🟡 Workflow escrito, sin publicar (permiso `workflows`) |
+| **13 — GITHUB** | Actions, builds, tests, releases | 🟡 CI publicada y en verde (tests, lint, APK debug); falta el workflow de release controlado |
 | **14 — RELEASE** | APK / AAB | ⬜ Pendiente (release firmada requiere keystore del propietario) |
 
 ## Criterio de salida del MVP (§114)

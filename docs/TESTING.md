@@ -34,9 +34,22 @@ ANDROID STUDIO → SYNC → BUILD → TEST → INSTALL → RUN
 
 ## Estado actual
 
-Solo existen los tests de ejemplo de la plantilla (`ExampleUnitTest`,
-`ExampleInstrumentedTest`). **Ninguna prueba se ha ejecutado todavía**: el entorno del agente
-no puede compilar. Ver `PROJECT_STATUS.md` → BLOQUEO 1 y 2.
+Ejecutado en GitHub Actions run
+[`33651715254`](https://github.com/Junmoxia41/MOVA/actions/runs/33651715254) (commit `c248d1a`):
+
+| Tarea | Resultado |
+| --- | --- |
+| `testDebugUnitTest` | ✅ success |
+| `lintDebug` | ✅ success |
+| `assembleDebug` | ✅ success — artefacto `mova-debug-apk`, 11 253 992 bytes |
+
+Cobertura real hoy: solo los tests de ejemplo de la plantilla (`ExampleUnitTest`,
+`ExampleInstrumentedTest`). **La cadena está verificada; la cobertura es nula.** Las pruebas
+de dominio, Room y sincronización llegan con las fases 2, 6 y 8.
+
+> El entorno del agente no puede compilar en local (sin JDK, Android SDK ni red para
+> descargarlos), así que **toda afirmación de compilación procede de un run de Actions**,
+> nunca de una suposición.
 
 ## Anti-mock (§110)
 
