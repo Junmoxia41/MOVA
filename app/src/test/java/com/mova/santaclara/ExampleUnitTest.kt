@@ -1,4 +1,4 @@
-package com.example.mova
+package com.mova.santaclara
 
 import org.junit.Test
 

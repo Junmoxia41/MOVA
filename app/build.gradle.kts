@@ -4,17 +4,18 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mova"
+    namespace = "com.mova.santaclara"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.mova"
+        applicationId = "com.mova.santaclara"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
-        versionName = "1.0"
+        // Mega Prompt §61 — MAJOR.MINOR.PATCH, coherente con versionCode
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
