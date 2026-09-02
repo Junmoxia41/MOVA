@@ -3,6 +3,15 @@
 **Room es la fuente local principal de datos persistentes** (§11). `SharedPreferences` queda
 descartado como base de datos; `DataStore` se usa solo para preferencias y flags (§47).
 
+## Estado actual
+
+Implementado y **verificado en CI**: `DriverEntity` + `DriverDao` + `MovaDatabase` (versión 1,
+esquema exportado a `app/schemas`). El resto de entidades está previsto abajo.
+
+Configuración real (`gradle/libs.versions.toml`): Room `3.0.2` (`androidx.room3`),
+KSP `2.3.11`, `androidx.sqlite:sqlite-bundled` `2.7.0`. Room 3 exige KSP y un `SQLiteDriver`;
+se usa el bundled para tener la misma versión de SQLite en todos los dispositivos (§88).
+
 ## Entidades previstas
 
 | Entidad | Contenido |
@@ -35,6 +44,9 @@ descartado como base de datos; `DataStore` se usa solo para preferencias y flags
 
 Nunca `fallbackToDestructiveMigration` en release: se pierden datos del usuario.
 Las migraciones se escriben y se prueban (§85).
+
+`exportSchema = true` y `ksp { arg("room.schemaLocation", "$projectDir/schemas") }` guardan el
+esquema versionado en `app/schemas/`, que es lo que permite probar migraciones después.
 
 ## Relación con Supabase
 
