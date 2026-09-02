@@ -62,6 +62,32 @@ jobs:
           set -o pipefail
           ./gradlew --no-daemon --stacktrace testDebugUnitTest 2>&1 | tee -a "$RUNNER_TEMP/ci.log"
 
+      - name: Report test results
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import glob, os, xml.etree.ElementTree as ET
+          files = glob.glob("app/build/test-results/testDebugUnitTest/*.xml")
+          total = failures = errors = skipped = 0
+          suites = []
+          for f in files:
+              r = ET.parse(f).getroot()
+              total += int(r.get("tests", 0))
+              failures += int(r.get("failures", 0))
+              errors += int(r.get("errors", 0))
+              skipped += int(r.get("skipped", 0))
+              suites.append(os.path.basename(f).replace("TEST-", "").replace(".xml", ""))
+          if not files:
+              print("::error::No se generó ningún XML de resultados: los tests no se ejecutaron")
+              raise SystemExit(1)
+          print(f"::notice::Unit tests: {total} ejecutados, {failures} fallidos, "
+                f"{errors} errores, {skipped} omitidos")
+          for s in sorted(suites):
+              print(f"::notice::  suite {s}")
+          if failures or errors:
+              raise SystemExit(1)
+          PY
+
       - name: Lint
         run: |
           set -o pipefail
