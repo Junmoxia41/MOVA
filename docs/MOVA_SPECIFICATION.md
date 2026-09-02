@@ -3,9 +3,9 @@
 | Campo | Valor |
 | --- | --- |
 | **Documento** | `docs/MOVA_SPECIFICATION.md` |
-| **Versión del documento** | 1.0.0 |
+| **Versión del documento** | 1.1.0 |
 | **Fecha** | 2026-09-02 |
-| **Estado** | Consolidado — pendiente de aprobación del propietario para iniciar desarrollo |
+| **Estado** | Consolidado — desarrollo iniciado (Fase 1 verificada en CI). Estado vivo en `PROJECT_STATUS.md` |
 | **Naturaleza** | Especificación maestra derivada. No sustituye a las fuentes; las resume, ordena y relaciona. |
 
 **Fuentes de esta especificación (leídas completas, sin omisiones):**
@@ -224,6 +224,11 @@ mova/
 
 Esta estructura puede mejorarse si existe una alternativa técnicamente superior, **pero la
 separación de responsabilidades es innegociable**.
+
+> **Actualización (2026-09-02).** El árbol anterior reproduce la propuesta literal del Mega
+> Prompt §8. El identificador adoptado es **`com.mova.app`** (decisión del propietario,
+> registrada en `docs/DECISIONS.md` → D-001), no `com.mova.santaclara`. El resto de la
+> estructura se mantiene.
 
 ### Componentes clave
 
@@ -688,7 +693,7 @@ precedencia y el motivo.
 | C8 | **MEDIO** | Mega §46 pide notificaciones push preparadas "investigando costes"; Límites §2/§15 prohíben contratar o activar servicios de pago y crear cuentas externas. | **Gana Límites.** V1 = **solo notificaciones locales**. Push queda como abstracción sin proveedor contratado. |
 | C9 | **MEDIO** | Mega §71 admite un **panel web separado** de administración; Mega §4 prohíbe frameworks web **como núcleo de la app**. | **No hay contradicción real** (la prohibición es sobre el núcleo Android). Es una decisión de producto: `PENDIENTE DE DECISIÓN` — admin en Android vs. panel web. |
 | C10 | **MEDIO** | Mega §108 propone ramas `develop` / `feature/*`; Límites §4 prohíbe borrar ramas importantes y hacer force-push destructivo. Además, **esta sesión de trabajo está fijada a una única rama**, `arena/01a062b2-mova`. | **Gana Límites.** Se trabaja sobre la rama asignada y se integra a `main` por PR. No se borra nada ni se reescribe historial. El modelo de ramas completo se activa cuando el flujo de trabajo lo permita. |
-| C11 | **MEDIO** | Mega §8 propone `com.mova.santaclara`; el repositorio real usa `com.example.mova`. Cambiar `applicationId` después de publicar es costoso. | `PENDIENTE DE DECISIÓN` del propietario (impacta identidad en Play). Se documenta antes de la Fase 1 para decidir una sola vez. |
+| C11 | **MEDIO** — ✅ **RESUELTO** | Mega §8 propone `com.mova.santaclara`; el repositorio real usaba `com.example.mova`. Cambiar `applicationId` después de publicar es costoso. | **Resuelto por el propietario (2026-09-02): `com.mova.app`.** Ver `docs/DECISIONS.md` → D-001. Renombrado y verificado en CI. |
 | C12 | **BAJO** | Mega §1 permite "crear datos ficticios de desarrollo" (Límites §1) frente a la regla anti-mock en producción (Mega §110). | **Compatible.** Datos ficticios solo en `DEVELOPMENT`/tests/demos controladas, separados por entorno. |
 | C13 | **BAJO** | Mega §9 fija ~200 líneas por archivo, incluidos "archivos de configuración cuando resulte razonable". | **Compatible**, con criterio: no fragmentar absurdamente para cumplir el número. |
 
@@ -790,7 +795,7 @@ sobre `main`. Contenido: los dos `.docx` + plantilla **New Project de Android St
 | R2 | **ALTO** | **El entorno disponible no puede construir ni verificar**: sin JDK (`java: command not found`), sin Android SDK (`ANDROID_HOME` vacío, no existe `/usr/lib/android-sdk`), sin Gradle y **sin red saliente** desde el shell (`curl` a `services.gradle.org`, `repo1.maven.org` y `supabase.com` devuelve `000`) | Comprobado en la sesión | Impide cumplir Mega §112/§114 aquí. Mitigación: builds en Android Studio del propietario o en **GitHub Actions**; nada se declarará "compilado" sin evidencia (C2) |
 | R3 | **MEDIO** | `versionName = "1.0"` **no sigue** `MAJOR.MINOR.PATCH` (Mega §61) | `app/build.gradle.kts` | Corregir a `1.0.0` y mantener coherencia con `versionCode` |
 | R4 | **MEDIO** | **Sin permiso `INTERNET`** en el manifiesto | `app/src/main/AndroidManifest.xml` | Imprescindible para Supabase; se añadirá en Fase 2 |
-| R5 | **MEDIO** | `applicationId` / `namespace` = `com.example.mova`, distinto del propuesto `com.mova.santaclara` | `app/build.gradle.kts` | Decidir **antes** de la primera publicación (C11). Cambiarlo después es costoso |
+| R5 | **MEDIO** — ✅ **RESUELTO** | `applicationId` / `namespace` era `com.example.mova` | `app/build.gradle.kts` | Decidido `com.mova.app` antes de cualquier publicación (C11 / D3). Verificado en CI |
 | R6 | **MEDIO** | `app/build.gradle.kts` aplica `android.application` + `kotlin.compose`, **sin aplicar explícitamente el plugin de Kotlin Android** | `build.gradle.kts` y `app/build.gradle.kts` | Verificar contra la documentación oficial de **AGP 9.4** si el soporte de Kotlin es integrado (Mega §105: *NO ASUMIR*). **No verificado aquí** por R2 |
 | R7 | **BAJO** | Versiones muy recientes: **AGP 9.4.0, Gradle 9.6.0, Kotlin 2.2.10, Compose BOM 2026.02.01, `compileSdk`/`targetSdk` 37, `minSdk` 24, toolchain JVM 25** con `sourceCompatibility` 11 | `gradle/libs.versions.toml`, `gradle/wrapper/gradle-wrapper.properties`, `gradle/gradle-daemon-jvm.properties` | Comprobar **compatibilidad real con supabase-kt y Ktor** (Mega §66, §68) antes de la Fase 2 |
 | R8 | **BAJO** | Optimización/R8 **deshabilitada** en `release` (`optimization { enable = false }`) y `allowBackup="true"` | `app/build.gradle.kts`, `AndroidManifest.xml` | Revisar antes de cualquier release real |
@@ -817,7 +822,7 @@ Todas requieren **decisión del propietario**. Ninguna se asumirá como definiti
 | --- | --- | --- | --- |
 | D1 | **Proyecto Supabase**: quién lo crea, URL y `anon key` (PUBLIC CONFIG), y confirmación de que el proyecto es de desarrollo | Límites §15 (no crear cuentas externas) y §2 (no activar servicios con facturación) | Fases 2–14 |
 | D2 | **Entorno real**: ¿existe ya un proyecto Supabase con **datos reales**? ¿hay `STAGING` y `PRODUCTION` separados? | Límites §6 (nunca asumir que una BD es de desarrollo) | Aplicación de migraciones |
-| D3 | **`applicationId` / `namespace`**: mantener `com.example.mova` o migrar a `com.mova.santaclara` | Impacta la identidad de publicación; decisión de producto | Fase 1 |
+| ~~D3~~ | ~~**`applicationId` / `namespace`**~~ — ✅ **RESUELTO el 2026-09-02: `com.mova.app`** (decisión del propietario; ver `docs/DECISIONS.md` → D-001) | — | Cerrada |
 | D4 | **Keystore de release**: keystore, alias y passwords, gestionados fuera del código (GitHub Secrets / almacén del propietario) | Límites §3 y Mega §91: el agente no inventa ni filtra claves de firma | Fase 14 (release firmada) |
 | D5 | **Modelo de administración**: admin dentro de la app Android o **panel web separado** (C9) | Mega §71 lo deja explícitamente al análisis; implica alcance y posiblemente un segundo proyecto | Fase 11 |
 | D6 | **Precios, moneda y método de pago** de `FREE / PRO / PREMIUM`, y comisión | Límites §8: el modelo de negocio y los precios son del propietario | Fase 10 (solo el mecanismo es configurable) |

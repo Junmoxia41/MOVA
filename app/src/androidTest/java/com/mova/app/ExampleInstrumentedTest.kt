@@ -1,4 +1,4 @@
-package com.mova.santaclara
+package com.mova.app
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.mova.santaclara", appContext.packageName)
+        assertEquals("com.mova.app", appContext.packageName)
     }
 }

@@ -6,15 +6,19 @@ consecuencias. Las decisiones de producto y negocio **no** están aquí: son del
 
 ---
 
-## D-001 — Paquete `com.mova.santaclara`
+## D-001 — Paquete `com.mova.app`  ✅ decidida por el propietario
 
 - **Contexto**: la plantilla usaba `com.example.mova`. El Mega Prompt §8 propone
-  `com.mova.santaclara`.
-- **Decisión**: renombrar `namespace`, `applicationId` y estructura de paquetes.
-- **Motivo**: `com.example.*` está reservado por Google y no es publicable en Play; cambiarlo
-  después de publicar es caro.
-- **Reversible**: sí, mientras no exista publicación. Se documenta como decisión D3 de la
-  especificación por si el propietario prefiere otro identificador.
+  `com.mova.santaclara` como ejemplo de estructura.
+- **Decisión**: `namespace` y `applicationId` = **`com.mova.app`**, estructura
+  `app/src/main/java/com/mova/app/`.
+- **Motivo**: `com.example.*` está reservado por Google y no es publicable en Play. El
+  propietario eligió `com.mova.app` frente a `com.mova.santaclara` (2026-09-02): deja el
+  identificador libre del nombre de la primera ciudad, coherente con la expansión a otros
+  municipios prevista en §78.
+- **Cierre**: resuelve el conflicto **C11** y la decisión pendiente **D3** de la especificación.
+- **Verificado**: compila en GitHub Actions (rename completo, incluidos los tests que
+  comprueban `appContext.packageName`).
 
 ## D-002 — Versión de Room: **Room 3.0.x** (`androidx.room3`)
 

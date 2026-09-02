@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.mova.santaclara"
+    namespace = "com.mova.app"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.mova.santaclara"
+        applicationId = "com.mova.app"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

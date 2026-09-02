@@ -2,7 +2,7 @@
 
 ## Estado
 
-**Fase 1 — BOOTSTRAP verificada en CI.** Repositorio saneado, paquete renombrado, documentación
+**Fase 1 — BOOTSTRAP verificada en CI.** Repositorio saneado, paquete `com.mova.app`, documentación
 completa, esquema Supabase escrito y **pipeline de compilación en verde**.
 Todavía no hay capa de datos (Room) ni UI propia.
 

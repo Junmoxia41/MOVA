@@ -14,7 +14,7 @@ Verificadas leyendo los ficheros de build del repositorio:
 | `minSdk` | 24 | `app/build.gradle.kts` |
 | Toolchain JVM del daemon | 25 | `gradle/gradle-daemon-jvm.properties` |
 | `sourceCompatibility` | 11 | `app/build.gradle.kts` |
-| `applicationId` / `namespace` | `com.mova.santaclara` | `app/build.gradle.kts` |
+| `applicationId` / `namespace` | `com.mova.app` | `app/build.gradle.kts` |
 | `versionCode` / `versionName` | 1 / 1.0.0 | `app/build.gradle.kts` |
 
 > Los valores de SDK no se inventan: se ajustan a lo que soportan las herramientas y

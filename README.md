@@ -27,7 +27,7 @@ Prohibido: Flutter, React Native, Ionic, Capacitor, WebView como núcleo. **MOVA
 ## Estructura
 
 ```
-app/src/main/java/com/mova/santaclara/
+app/src/main/java/com/mova/app/
 ├── core/      common · connectivity · logging · network · security
 ├── data/      local/{room,dao} · remote/supabase · repository · sync
 ├── domain/    model · usecase

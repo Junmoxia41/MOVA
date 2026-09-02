@@ -18,6 +18,7 @@ Formato basado en Keep a Changelog. Versionado: `MAJOR.MINOR.PATCH` (Mega Prompt
 ### Changed
 
 - `versionName` de `1.0` a `1.0.0` (esquema `MAJOR.MINOR.PATCH`).
+- `applicationId` y `namespace` a `com.mova.app`, decidido por el propietario.
 
 ## [1.0.0] — 2026-09-02
 
@@ -29,7 +30,7 @@ Formato basado en Keep a Changelog. Versionado: `MAJOR.MINOR.PATCH` (Mega Prompt
 
 ### Changed
 
-- Paquete y `applicationId` de `com.example.mova` a `com.mova.santaclara`.
+- Paquete y `applicationId` de `com.example.mova` a `com.mova.app` (identificador confirmado por el propietario).
 
 ### Fixed
 

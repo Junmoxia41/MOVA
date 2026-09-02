@@ -1,4 +1,4 @@
-package com.mova.santaclara.ui.theme
+package com.mova.app.ui.theme
 
 import android.app.Activity
 import android.os.Build

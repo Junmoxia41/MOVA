@@ -1,4 +1,4 @@
-package com.mova.santaclara.ui.theme
+package com.mova.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
