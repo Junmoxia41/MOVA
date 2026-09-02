@@ -1,8 +1,12 @@
 name: Android CI
 
 # Verificación real de cada push: build + tests + lint (Mega Prompt §64, §106, §111).
-# NO publica nada: solo compila y prueba. La publicación requiere autorización
-# explícita del propietario (Límites §9).
+# NO publica nada: solo compila y prueba. Publicar requiere autorización explícita
+# del propietario (Límites §9).
+#
+# Los logs de ejecución se almacenan en un blob externo al que el entorno de
+# desarrollo no tiene acceso, así que en caso de fallo el workflow publica las
+# últimas líneas como comentario del commit. Es el canal de diagnóstico.
 
 on:
   push:
@@ -15,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -28,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
@@ -36,20 +40,37 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android platform
-        run: sdkmanager --install "platforms;android-37" "build-tools;37.0.0"
+      - name: Inspect Android SDK
+        run: |
+          set -x
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          sdkmanager --version || true
+          sdkmanager --list_installed || true
+
+      - name: Install Android platform 37
+        run: |
+          set -x
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager --install "platforms;android-37" || true
+          sdkmanager --list_installed
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Unit tests
-        run: ./gradlew --no-daemon --stacktrace testDebugUnitTest
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace testDebugUnitTest 2>&1 | tee -a "$RUNNER_TEMP/ci.log"
 
       - name: Lint
-        run: ./gradlew --no-daemon --stacktrace lintDebug
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace lintDebug 2>&1 | tee -a "$RUNNER_TEMP/ci.log"
 
       - name: Assemble debug APK
-        run: ./gradlew --no-daemon --stacktrace assembleDebug
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace assembleDebug 2>&1 | tee -a "$RUNNER_TEMP/ci.log"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -59,12 +80,19 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
-      - name: Upload test reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-and-lint-reports
-          path: |
-            app/build/reports/tests/
-            app/build/reports/lint-results-debug.html
-          if-no-files-found: ignore
+      - name: Report failure on commit
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "### ❌ CI falló en \`${{ github.job }}\`"
+            echo
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo '```'
+            tail -n 120 "$RUNNER_TEMP/ci.log" 2>/dev/null || echo "(sin log de Gradle: el fallo fue anterior)"
+            echo '```'
+          } > "$RUNNER_TEMP/body.md"
+          gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" \
+            -f body="$(cat "$RUNNER_TEMP/body.md")" > /dev/null
