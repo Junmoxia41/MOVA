@@ -8,9 +8,11 @@ lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
 kotlin = "2.2.10"
 composeBom = "2026.02.01"
-# KSP debe coincidir con la versión de Kotlin: 2.2.10 -> 2.2.10-2.0.2
-# (verificado en github.com/google/ksp/releases, Mega Prompt §68 y §105)
-ksp = "2.2.10-2.0.2"
+# La línea 2.3.x de KSP está desacoplada de la versión de Kotlin y es la que soporta
+# el built-in Kotlin de AGP 9 (google/ksp#2729, #2772). Con 2.2.10-2.0.2 el build
+# fallaba con "Using kotlin.sourceSets DSL ... is not allowed with built-in Kotlin".
+# Verificado en github.com/google/ksp/releases (Mega Prompt §68 y §105).
+ksp = "2.3.11"
 # Room 3 es la línea estable vigente; Room 2.x está en modo mantenimiento.
 # Docs: developer.android.com/jetpack/androidx/releases/room3 (Mega Prompt §105)
 room3 = "3.0.2"
