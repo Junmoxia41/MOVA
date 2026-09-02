@@ -1,0 +1,39 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local configuration: nunca versionar (contiene rutas y claves locales)
+local.properties
+
+# Keystore / firma: NUNCA versionar (Mega Prompt §91, Límites §3)
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# Secrets / entorno (Mega Prompt §90)
+.env
+.env.*
+*.secret
+secrets.properties
+google-services.json
+
+# Logs y reports
+*.log
+*.hprof
+reports/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
