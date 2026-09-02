@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+- Configuración de build Android inválida en `app/build.gradle.kts`. Reemplazada la DSL
+  inexistente (`compileSdk { version = release(37) }`, `optimization { enable = false }`)
+  por la DSL válida de AGP 9.4 (`compileSdk = 37`, `isMinifyEnabled = false`).
+- Alineado el target JVM a `17` (AGP 9.4 requiere JDK >= 17).
+- No se aplica el plugin `org.jetbrains.kotlin.android`: AGP 9.4 ya incluye Kotlin
+  integrado; aplicarlo causaba `Cannot add extension with name 'kotlin'`.
+
 ## [1.0.0]
 
 ### Added
